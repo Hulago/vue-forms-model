@@ -1,0 +1,23 @@
+{
+  "name": "vue-forms-model",
+  "version": "1.0.0",
+  "description": "Forms model for Vuejs, based on angular abstract controls.",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hulago/vue-forms-model.git"
+  },
+  "author": "Hugo Lago",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Hulago/vue-forms-model/issues"
+  },
+  "homepage": "https://github.com/Hulago/vue-forms-model#readme",
+  "dependencies": {
+    "lodash": "^4.17.4",
+    "vue": "^2.4.4"
+  }
+}
