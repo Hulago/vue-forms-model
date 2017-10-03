@@ -1,1 +1,2 @@
-export * from './form-control.directive'
+import FormControlDirective from './form-control.directive';
+export { FormControlDirective };

@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import {forOwn, set, debounce} from 'lodash';
 import {
   AbstractControl,
   IAbstractControlAsyncValidator,
@@ -19,18 +19,18 @@ export class FormGroup extends AbstractControl {
 
     let self = this;
 
-    _.forOwn(this.controls, (control, controlName) => {
-      _.set(this, controlName, control);
-      control.parent = null;
-      control.parent = self;
-      _.set(control, 'name', controlName);
-      _.set(this.value, controlName, control.value);
+    forOwn(this.controls, (control, controlName) => {
+      set(this, controlName, control);
+      control.$parent = null;
+      control.$parent = self;
+      set(control, 'name', controlName);
+      set(this.value, controlName, control.value);
     });
 
     if (this.debounce === 0) {
       this.validateDebounce = this.validate;
     } else {
-      this.validateDebounce = _.debounce(() => {
+      this.validateDebounce = debounce(() => {
         this.validate();
       }, this.debounce);
     }
@@ -42,27 +42,27 @@ export class FormGroup extends AbstractControl {
       let _arr = [];
       // get all valid state from the child controls
       for (let key of Object.keys(this.controls)) {
-        _arr.push(this.controls[key].valid);
+        _arr.push(this.controls[key].$valid);
       }
       //reduce the array of the child valid state controls
       validSync = this.reduceBooleanArray(_arr);
     }
-    this.valid = validSync;
+    this.$valid = validSync;
     this.notifyParent();
-    return Promise.resolve(this.valid);
+    return Promise.resolve(this.$valid);
   }
 
   onChange(state) {
     if (state.dirty) {
-      this.dirty = true;
+      this.$dirty = true;
     }
-    this.focus = state.focus;
-    if(!this.touch) {
-      this.touch = state.touch;
+    this.$focus = state.focus;
+    if(!this.$touch) {
+      this.$touch = state.touch;
     }
     
-    this.loading = state.loading;
-    _.set(this.value, state.name, state.value);
+    this.$loading = state.loading;
+    set(this.value, state.name, state.value);
     this.validateDebounce();
     this.notifyParent();
 
@@ -70,7 +70,7 @@ export class FormGroup extends AbstractControl {
   }
 
   setValue(value: Object) {
-    _.forOwn(value, (val, key) => {
+    forOwn(value, (val, key) => {
       if (this.controls[key]) {
         (this.controls[key] as any).setValue(val);
       } else {

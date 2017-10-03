@@ -1,36 +1,35 @@
-import * as Vue from 'vue';
 import { DirectiveOptions, VNode } from 'vue';
-import * as _ from 'lodash';
-import { FormControl } from 'core';
+import {get} from 'lodash';
+import { FormControl } from '../models';
 
 export default (() => {
   const focusHandler = (fc: FormControl) => {
-    fc.focus = true;
-    if (!fc.touch) {
-      fc.touch = true;
+    fc.$focus = true;
+    if (!fc.$touch) {
+      fc.$touch = true;
     }
 
     fc.notifyParent();
   };
 
-  const blurHandler = fc => {
-    fc.focus = false;
+  const blurHandler = (fc: FormControl) => {
+    fc.$focus = false;
 
-    if (!fc.touch) {
-      fc.touch = true;
+    if (!fc.$touch) {
+      fc.$touch = true;
     }
 
     fc.validate();
     fc.notifyParent();
   };
 
-  const inputHandler = (fc, event: any) => {
-    fc.value = _.get(event, 'target.value', event);
+  const inputHandler = (fc: FormControl, event: any) => {
+    fc.value = get(event, 'target.value', event);
 
     fc.validateDebounce();
 
-    if (!fc.dirty) {
-      fc.dirty = true;
+    if (!fc.$dirty) {
+      fc.$dirty = true;
     }
 
     fc.notifyParent();
@@ -40,7 +39,7 @@ export default (() => {
     priority: 3000,
     // When the bound element is inserted into the DOM...
     bind: function(el, binding, vnode: VNode) {
-      let event = _.get(vnode, 'componentOptions.Ctor.options.model.event', 'input');
+      let event = get(vnode, 'componentOptions.Ctor.options.model.event', 'input');
 
       el.data = {
         inputFn: inputHandler.bind(this, binding.value),
@@ -62,7 +61,7 @@ export default (() => {
     },
 
     unbind: function(el, binding, vnode) {
-      let event = _.get(vnode, 'componentOptions.Ctor.options.model.event', 'input');
+      let event = get(vnode, 'componentOptions.Ctor.options.model.event', 'input');
 
       if (vnode.componentInstance) {
         vnode.componentInstance.$off(event, el.data.inputFn);
@@ -79,8 +78,8 @@ export default (() => {
     },
 
     componentUpdated: function(el, binding, vnode: VNode) {
-      let event = _.get(vnode, 'componentOptions.Ctor.options.model.event', 'input');
-      let prop = _.get(vnode, 'componentOptions.Ctor.options.model.prop', 'value');
+      let event = get(vnode, 'componentOptions.Ctor.options.model.event', 'input');
+      let prop = get(vnode, 'componentOptions.Ctor.options.model.prop', 'value');
 
       el.data = {
         inputFn: inputHandler.bind(this, binding.value),

@@ -1,7 +1,6 @@
 ﻿import * as Directives from './directives';
 
 function plugin(Vue) {
-  Vue.directive('fg', Directives.FormGroupDirective);
   Vue.directive('fc', Directives.FormControlDirective);
 }
 

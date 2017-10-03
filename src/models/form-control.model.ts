@@ -1,5 +1,3 @@
-import * as Vue from 'vue';
-import * as _ from 'lodash';
 import {
   AbstractControl,
   IAbstractControlAsyncValidator,

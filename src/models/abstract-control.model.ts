@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import {get, debounce, has, forOwn} from 'lodash';
 
 export interface IAbstractControlValidator {
   (ac: AbstractControl): boolean;
@@ -13,34 +13,34 @@ export interface IControls {
 }
 
 export interface IAbstractControl {
-  valid: boolean;
-  focus: boolean;
-  touch: boolean;
-  dirty: boolean;
-  enable: boolean;
-  loading: boolean;
-  parent: IAbstractControl;
+  $valid: boolean;
+  $focus: boolean;
+  $touch: boolean;
+  $dirty: boolean;
+  $enable: boolean;
+  $loading: boolean;
+  $parent: IAbstractControl;
   controls?: IControls;
   value: any;
-  errors?: any;
+  $errors?: any;
   validateForm?: any;
 }
 
 const DEFAULT_DEBOUNCE_TIMEOUT = 0;
 
 export class AbstractControl implements IAbstractControl {
-  public name: string;
-  public valid: boolean;
-  public focus: boolean;
-  public touch: boolean;
-  public dirty: boolean;
-  public enable: boolean;
-  public loading: boolean;
-  public parent: AbstractControl;
+  public $name: string;
+  public $valid: boolean;
+  public $focus: boolean;
+  public $touch: boolean;
+  public $dirty: boolean;
+  public $enable: boolean;
+  public $loading: boolean;
+  public $parent: AbstractControl;
   public controls?: IControls;
   public debounce: number;
   public value: any;
-  public errors?: any;
+  public $errors?: any;
 
   public validators: Array<IAbstractControlValidator>;
   public asyncValidators: Array<IAbstractControlAsyncValidator>;
@@ -52,24 +52,24 @@ export class AbstractControl implements IAbstractControl {
     asyncValidators: Array<IAbstractControlAsyncValidator> = [],
     options: any = {}
   ) {
-    this.name = 'root';
-    this.valid = true;
-    this.focus = false;
-    this.touch = false;
-    this.dirty = false;
-    this.enable = true;
-    this.loading = false;
-    this.debounce = _.get(options, 'debounce', DEFAULT_DEBOUNCE_TIMEOUT);
+    this.$name = 'root';
+    this.$valid = true;
+    this.$focus = false;
+    this.$touch = false;
+    this.$dirty = false;
+    this.$enable = true;
+    this.$loading = false;
+    this.debounce = get(options, 'debounce', DEFAULT_DEBOUNCE_TIMEOUT);
     this.value = undefined;
-    this.parent = null;
-    this.errors = {};
+    this.$parent = null;
+    this.$errors = {};
     this.validators = validators;
     this.asyncValidators = asyncValidators;
 
     if (this.debounce === 0) {
       this.validateDebounce = this.validate;
     } else {
-      this.validateDebounce = _.debounce(() => {
+      this.validateDebounce = debounce(() => {
         this.validate();
       }, this.debounce);
     }
@@ -88,50 +88,50 @@ export class AbstractControl implements IAbstractControl {
   //  Execute onChange to notify parent of a state change
 
   notifyParent() {
-    if (this.parent && this.parent.onChange) {
-      this.parent.onChange(this);
+    if (this.$parent && this.$parent.onChange) {
+      this.$parent.onChange(this);
     }
     // this.$emit('state', this.state)
   }
 
   addError(error: string, message: string) {
-    this.errors = {
-      ...this.errors,
+    this.$errors = {
+      ...this.$errors,
       [error]: message
     };
   }
 
   removeError(error: string) {
-    delete this.errors[error];
-    this.errors = {
-      ...this.errors
+    delete this.$errors[error];
+    this.$errors = {
+      ...this.$errors
     };
   }
 
   validate() {
     let validSync = this.validateSync();
     if (validSync && this.asyncValidators && this.asyncValidators.length > 0) {
-      this.loading = true;
+      this.$loading = true;
       this.notifyParent();
       return this.validateAsync().then(validAsync => {
-        this.valid = validAsync;
-        this.loading = false;
+        this.$valid = validAsync;
+        this.$loading = false;
         this.notifyParent();
-        return this.valid;
+        return this.$valid;
       });
     } else {
-      this.valid = validSync;
+      this.$valid = validSync;
       this.notifyParent();
-      return Promise.resolve(this.valid);
+      return Promise.resolve(this.$valid);
     }
   }
 
   isFormGroup() {
-    return _.has(this, 'controls');
+    return has(this, 'controls');
   }
 
   isFormControl() {
-    return !_.has(this, 'controls');
+    return !has(this, 'controls');
   }
 
   validateForm(): Promise<boolean> {
@@ -139,7 +139,7 @@ export class AbstractControl implements IAbstractControl {
       let validSync = this.validateSync();
 
       let _arr = [];
-      _.forOwn(this.controls, (control, key) => {
+      forOwn(this.controls, (control, key) => {
         _arr.push(Promise.resolve(control.validateForm()));
       });
 
