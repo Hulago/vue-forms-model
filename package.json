@@ -4,7 +4,9 @@
   "description": "Forms model for Vuejs, based on angular abstract controls.",
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node_modules/.bin/jest",
+    "test:watch": "node_modules/.bin/jest --watch",
+    "test:coverage": "yarn test -- --coverage --no-cache"
   },
   "repository": {
     "type": "git",
@@ -15,10 +17,40 @@
   "bugs": {
     "url": "https://github.com/Hulago/vue-forms-model/issues"
   },
+  "jest": {
+    "transform": {
+      ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/test/"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 90,
+        "functions": 95,
+        "lines": 95,
+        "statements": 95
+      }
+    }
+  },
   "homepage": "https://github.com/Hulago/vue-forms-model#readme",
   "dependencies": {
-    "@types/lodash": "^4.14.76",
     "lodash": "^4.17.4",
     "vue": "^2.4.4"
+  },
+  "devDependencies": {
+    "@types/jest": "^21.1.1",
+    "@types/lodash": "^4.14.76",
+    "@types/node": "^8.0.31",
+    "jest": "^21.2.1",
+    "ts-jest": "^21.0.1",
+    "typescript": "^2.5.3"
   }
 }
