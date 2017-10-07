@@ -9,7 +9,7 @@ Like angular forms, it has the concepts of:
  * form-control
  * form-array
 
-Then there is a directive where we can bind vue components to forms-control.
+Then there is a directive where we can bind vue components to forms-controls.
 
 form-group, form-control and form-array inherit from an abtract-control class so they all share a state with the following fields:
  * $dirty - the control has been interacted with
@@ -28,10 +28,16 @@ form-group, form-control and form-array inherit from an abtract-control class so
  * form-array(fa) - array []
  * form-control(fc) - primitive.
 
- Example:
 
 | forms model | object |
 |-------------|--------|
-| fg - login:      | "login" : {
-|  - fc - username |  "username": "",
-|  - fc - password |  "password": "" }
+| fg - login:<br/> - fc - username <br/> - fc - password | "login" : { <br/> "username": "", <br/> "password": "" } |
+
+```javascript
+
+let login = new FormGroup({
+  username: new FormControl(),
+  password: new FormControl()
+});
+
+```
