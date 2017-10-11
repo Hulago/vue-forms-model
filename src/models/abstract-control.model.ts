@@ -134,11 +134,11 @@ export class AbstractControl implements IAbstractControl {
   }
 
   isFormGroup() {
-    return has(this, 'controls');
+    return has(this, '$controls');
   }
 
   isFormControl() {
-    return !has(this, 'controls');
+    return !has(this, '$controls');
   }
 
   validateForm(): Promise<boolean> {
@@ -146,7 +146,7 @@ export class AbstractControl implements IAbstractControl {
       let validSync = this.validateSync();
 
       let _arr: Array<Promise<boolean>> = [];
-      forOwn(this.controls, (control, key) => {
+      forOwn(this.$controls, (control, key) => {
         _arr.push(Promise.resolve(control.validateForm()));
       });
 

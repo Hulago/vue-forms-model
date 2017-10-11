@@ -35,8 +35,6 @@ describe('Abstract Control Class', () => {
     expect(() => ac.onChange(ac)).toThrow('not implemented');
   });
 
-  it('should notify parent');
-
   it('should add error', () => {
     ac.addError('error', 'some message');
     expect(ac.$errors['error']).toBe('some message');
@@ -60,5 +58,44 @@ describe('Abstract Control Class', () => {
 
     expect(ac.validateSync()).toBeFalsy();
     expect(ac.validateSync()).toBeTruthy();
+  });
+
+  it('should be valid if not asyncValidator', () => {
+    return ac.validateAsync().then(res => {
+      expect(res).toBeTruthy();
+    });
+  });
+
+  it('should validate async validators', () => {
+    const mockValidator = jest.fn();
+    mockValidator.mockReturnValueOnce(false).mockReturnValueOnce(true);
+
+    const asyncValidator = () => Promise.resolve(mockValidator());
+
+    ac.asyncValidators.push(asyncValidator);
+    ac.asyncValidators.push(asyncValidator);
+
+    return ac.validateAsync().then(res => {
+      expect(res).toBeFalsy();
+    });
+  });
+
+  it('should validate false if async validador returns an error', () => {
+    const asyncValidatorReject = () => Promise.reject('Error');
+
+    ac.asyncValidators = [];
+    ac.asyncValidators.push(asyncValidatorReject);
+
+    return ac.validateAsync().then(res => {
+      expect(res).toBeFalsy();
+    });
+  });
+
+  it('should be formControl', () => {
+    expect(ac.isFormControl()).toBeTruthy();
+  });
+
+  it('should not be formGroup', () => {
+    expect(ac.isFormGroup()).toBeFalsy();
   });
 });
