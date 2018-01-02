@@ -5,7 +5,6 @@ import {
   IAbstractControlValidator,
   IControls
 } from "./abstract-control.model";
-import { IAbstractControl } from "../index";
 
 export class FormGroup extends AbstractControl {
   constructor(
@@ -15,25 +14,25 @@ export class FormGroup extends AbstractControl {
     options: any = {}
   ) {
     super(validators, asyncValidators, options);
-    this.controls = controls;
+    this.$controls = controls;
     this.value = {};
 
     let self = this;
 
-    forOwn(this.controls, (control, controlName) => {
+    forOwn(this.$controls, (control, controlName) => {
       set(this, controlName, control);
-      control.$parent = null;
+      control.$parent = null as any;
       control.$parent = self;
-      set(control, "name", controlName);
+      set(control, "$name", controlName);
       set(this.value, controlName, control.value);
     });
 
-    if (this.debounce === 0) {
+    if (this.$options.debounce === 0) {
       this.validateDebounce = this.validate;
     } else {
       this.validateDebounce = debounce(() => {
         this.validate();
-      }, this.debounce);
+      }, this.$options.debounce);
     }
   }
 
@@ -42,9 +41,9 @@ export class FormGroup extends AbstractControl {
     if (validSync) {
       let _arr = [];
       // get all valid state from the child control
-      for (const key in this.controls) {
-        if (this.controls.hasOwnProperty(key)) {
-          const element = this.controls[key];
+      for (const key in this.$controls) {
+        if (this.$controls.hasOwnProperty(key)) {
+          const element = this.$controls[key];
           _arr.push(element.$valid);
         }
       }
@@ -75,8 +74,8 @@ export class FormGroup extends AbstractControl {
 
   setValue(value: Object) {
     forOwn(value, (val, key) => {
-      if (this.controls[key]) {
-        (this.controls[key] as any).setValue(val);
+      if (this.$controls && this.$controls[key]) {
+        (this.$controls[key] as any).setValue(val);
       } else {
         console.warn(`invalid property ${key}`);
       }

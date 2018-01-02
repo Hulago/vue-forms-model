@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import { get, debounce, has, forOwn } from "lodash";
+=======
+import { get, debounce, has, forOwn } from 'lodash';
+>>>>>>> 4a7bfd7063d2dfe0c58b7f882b0aa82c755e6032
 
 export interface IAbstractControlValidator {
   (ac: AbstractControl): boolean;
@@ -12,6 +16,10 @@ export interface IControls {
   [control: string]: IAbstractControl;
 }
 
+export interface IAbstractControlOptions {
+  debounce: number;
+}
+
 export interface IAbstractControl {
   $valid: boolean;
   $focus: boolean;
@@ -19,8 +27,9 @@ export interface IAbstractControl {
   $dirty: boolean;
   $enable: boolean;
   $loading: boolean;
+  $options?: IAbstractControlOptions;
   $parent?: IAbstractControl;
-  controls?: IControls;
+  $controls?: IControls;
   value: any;
   $errors?: any;
   validateForm?: any;
@@ -37,8 +46,8 @@ export class AbstractControl implements IAbstractControl {
   public $enable: boolean;
   public $loading: boolean;
   public $parent: AbstractControl;
-  public controls?: IControls;
-  public debounce: number;
+  public $controls?: IControls;
+  public $options: IAbstractControlOptions;
   public value: any;
   public $errors?: any;
 
@@ -59,23 +68,25 @@ export class AbstractControl implements IAbstractControl {
     this.$dirty = false;
     this.$enable = true;
     this.$loading = false;
-    this.debounce = get(options, "debounce", DEFAULT_DEBOUNCE_TIMEOUT);
+    this.$options = {
+      debounce: get(options, 'debounce', DEFAULT_DEBOUNCE_TIMEOUT)
+    };
     this.value = undefined;
-    this.$parent = null;
+    this.$parent = null as any;
     this.$errors = {};
     this.validators = validators;
     this.asyncValidators = asyncValidators;
 
-    if (this.debounce === 0) {
+    if (this.$options.debounce === 0) {
       this.validateDebounce = this.validate;
     } else {
       this.validateDebounce = debounce(() => {
         this.validate();
-      }, this.debounce);
+      }, this.$options.debounce);
     }
   }
 
-  reduceBooleanArray(arr: Array<boolean>) {
+  reduceBooleanArray(arr: Array<boolean> = []) {
     return arr.reduce((acc, item) => {
       return acc && item;
     }, true);
@@ -127,19 +138,19 @@ export class AbstractControl implements IAbstractControl {
   }
 
   isFormGroup() {
-    return has(this, "controls");
+    return has(this, '$controls');
   }
 
   isFormControl() {
-    return !has(this, "controls");
+    return !has(this, '$controls');
   }
 
   validateForm(): Promise<boolean> {
     if (this.isFormGroup()) {
       let validSync = this.validateSync();
 
-      let _arr = [];
-      forOwn(this.controls, (control, key) => {
+      let _arr: Array<Promise<boolean>> = [];
+      forOwn(this.$controls, (control, key) => {
         _arr.push(Promise.resolve(control.validateForm()));
       });
 

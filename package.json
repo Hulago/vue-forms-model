@@ -6,7 +6,8 @@
   "scripts": {
     "test": "node_modules/.bin/jest",
     "test:watch": "node_modules/.bin/jest --watch",
-    "test:coverage": "yarn test -- --coverage --no-cache"
+    "test:coverage": "yarn test -- --coverage --no-cache",
+    "test:remap": "./node_modules/.bin/remap-istanbul --input ./coverage/coverage-final.json --output ./coverage/remapped --type html"
   },
   "repository": {
     "type": "git",
@@ -50,6 +51,7 @@
     "@types/lodash": "^4.14.76",
     "@types/node": "^8.0.31",
     "jest": "^21.2.1",
+    "remap-istanbul": "^0.9.5",
     "ts-jest": "^21.0.1",
     "typescript": "^2.5.3"
   }
