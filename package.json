@@ -43,7 +43,7 @@
   "homepage": "https://github.com/Hulago/vue-forms-model#readme",
   "dependencies": {
     "lodash": "^4.17.4",
-    "vue": "^2.4.4"
+    "vue": "^2.5.4"
   },
   "devDependencies": {
     "@types/jest": "^21.1.1",

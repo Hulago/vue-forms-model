@@ -1,4 +1,4 @@
-import {get, debounce, has, forOwn} from 'lodash';
+import { get, debounce, has, forOwn } from "lodash";
 
 export interface IAbstractControlValidator {
   (ac: AbstractControl): boolean;
@@ -19,7 +19,7 @@ export interface IAbstractControl {
   $dirty: boolean;
   $enable: boolean;
   $loading: boolean;
-  $parent: IAbstractControl;
+  $parent?: IAbstractControl;
   controls?: IControls;
   value: any;
   $errors?: any;
@@ -52,14 +52,14 @@ export class AbstractControl implements IAbstractControl {
     asyncValidators: Array<IAbstractControlAsyncValidator> = [],
     options: any = {}
   ) {
-    this.$name = 'root';
+    this.$name = "root";
     this.$valid = true;
     this.$focus = false;
     this.$touch = false;
     this.$dirty = false;
     this.$enable = true;
     this.$loading = false;
-    this.debounce = get(options, 'debounce', DEFAULT_DEBOUNCE_TIMEOUT);
+    this.debounce = get(options, "debounce", DEFAULT_DEBOUNCE_TIMEOUT);
     this.value = undefined;
     this.$parent = null;
     this.$errors = {};
@@ -82,7 +82,7 @@ export class AbstractControl implements IAbstractControl {
   }
 
   onChange(control: AbstractControl): boolean {
-    throw 'not implemented';
+    throw "not implemented";
   }
 
   //  Execute onChange to notify parent of a state change
@@ -127,11 +127,11 @@ export class AbstractControl implements IAbstractControl {
   }
 
   isFormGroup() {
-    return has(this, 'controls');
+    return has(this, "controls");
   }
 
   isFormControl() {
-    return !has(this, 'controls');
+    return !has(this, "controls");
   }
 
   validateForm(): Promise<boolean> {
@@ -165,7 +165,7 @@ export class AbstractControl implements IAbstractControl {
   }
 
   /**
-   * 
+   *
    */
   validateAsync(): Promise<boolean> {
     if (!this.asyncValidators) {

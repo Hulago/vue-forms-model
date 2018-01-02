@@ -2,8 +2,8 @@ import {
   AbstractControl,
   IAbstractControlAsyncValidator,
   IAbstractControlValidator,
-  IControls,
-} from './abstract-control.model';
+  IControls
+} from "./abstract-control.model";
 
 export interface IFromControlOptions {
   debounce?: number;
@@ -14,7 +14,7 @@ export class FormControl extends AbstractControl {
     value: any = undefined,
     validators: Array<IAbstractControlValidator> = [],
     asyncValidators: Array<IAbstractControlAsyncValidator> = [],
-    options: IFromControlOptions = {},
+    options: IFromControlOptions = {}
   ) {
     super(validators, asyncValidators, options);
     this.value = value;

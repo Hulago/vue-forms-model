@@ -1,17 +1,18 @@
-import {forOwn, set, debounce} from 'lodash';
+import { forOwn, set, debounce } from "lodash";
 import {
   AbstractControl,
   IAbstractControlAsyncValidator,
   IAbstractControlValidator,
-  IControls,
-} from './abstract-control.model';
+  IControls
+} from "./abstract-control.model";
+import { IAbstractControl } from "../index";
 
 export class FormGroup extends AbstractControl {
   constructor(
     controls: IControls,
     validators: Array<IAbstractControlValidator> = [],
     asyncValidators: Array<IAbstractControlAsyncValidator> = [],
-    options: any = {},
+    options: any = {}
   ) {
     super(validators, asyncValidators, options);
     this.controls = controls;
@@ -23,7 +24,7 @@ export class FormGroup extends AbstractControl {
       set(this, controlName, control);
       control.$parent = null;
       control.$parent = self;
-      set(control, 'name', controlName);
+      set(control, "name", controlName);
       set(this.value, controlName, control.value);
     });
 
@@ -40,9 +41,12 @@ export class FormGroup extends AbstractControl {
     let validSync = this.validateSync();
     if (validSync) {
       let _arr = [];
-      // get all valid state from the child controls
-      for (let key of Object.keys(this.controls)) {
-        _arr.push(this.controls[key].$valid);
+      // get all valid state from the child control
+      for (const key in this.controls) {
+        if (this.controls.hasOwnProperty(key)) {
+          const element = this.controls[key];
+          _arr.push(element.$valid);
+        }
       }
       //reduce the array of the child valid state controls
       validSync = this.reduceBooleanArray(_arr);
@@ -52,17 +56,17 @@ export class FormGroup extends AbstractControl {
     return Promise.resolve(this.$valid);
   }
 
-  onChange(state) {
-    if (state.dirty) {
+  onChange(state: AbstractControl) {
+    if (state.$dirty) {
       this.$dirty = true;
     }
-    this.$focus = state.focus;
-    if(!this.$touch) {
-      this.$touch = state.touch;
+    this.$focus = state.$focus;
+    if (!this.$touch) {
+      this.$touch = state.$touch;
     }
-    
-    this.$loading = state.loading;
-    set(this.value, state.name, state.value);
+
+    this.$loading = state.$loading;
+    set(this.value, state.$name, state.value);
     this.validateDebounce();
     this.notifyParent();
 
